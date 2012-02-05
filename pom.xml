@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.richardson.james.bukkit</groupId>
   <artifactId>can-the-spam</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>can-the-spam</name>
 
   <scm>
