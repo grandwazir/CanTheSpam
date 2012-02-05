@@ -3,6 +3,3 @@ main: name.richardson.james.bukkit.canthespam.CanTheSpam
 description: Prevents chat and command spam.
 version: ${project.version}
 database: false
-commands:
-  cs:
-    description: 'Additional CanTheSpam commands'
