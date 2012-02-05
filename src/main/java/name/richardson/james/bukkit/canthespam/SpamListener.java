@@ -2,6 +2,7 @@ package name.richardson.james.bukkit.canthespam;
 
 import java.util.Map;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -10,14 +11,18 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import name.richardson.james.bukkit.banhammer.BanHandler;
+
 public class SpamListener implements Listener {
 
   private int hitCount = 5;
   private final Map<String, Integer> tracker;
+  private final BanHandler handler;
   
-  public SpamListener(Integer hitCount, Map<String, Integer> tracker) {
+  public SpamListener(Integer hitCount, Map<String, Integer> tracker, BanHandler handler) {
     this.hitCount = hitCount;
     this.tracker = tracker;
+    this.handler = handler;
   }
   
   public boolean isPlayerOverLimit(String playerName) {
@@ -45,8 +50,7 @@ public class SpamListener implements Listener {
     final String playerName = event.getPlayer().getName();  
     this.incrementPlayer(playerName);
     if (this.isPlayerOverLimit(playerName)) {
-      event.getPlayer().setBanned(true);
-      event.getPlayer().kickPlayer("Flooding the server");
+      banPlayer(event.getPlayer());
       event.setCancelled(true);
     }
   }
@@ -60,9 +64,17 @@ public class SpamListener implements Listener {
     final String playerName = event.getPlayer().getName();  
     this.incrementPlayer(playerName);
     if (this.isPlayerOverLimit(playerName)) {
-      event.getPlayer().setBanned(true);
-      event.getPlayer().kickPlayer("Flooding the server");
+      banPlayer(event.getPlayer());
       event.setCancelled(true);
+    }
+  }
+  
+  private void banPlayer(Player player) {
+    if (this.handler == null) {
+      player.setBanned(true);
+      player.kickPlayer("Flooding the server");
+    } else {
+      handler.banPlayer(player.getName(), "CanTheSpam", "Flooding the server", (long) 0, true);
     }
   }
   

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 
@@ -15,6 +17,7 @@ public class CanTheSpam extends Plugin {
   private SpamListener listener;
   private CooldownTimer timer;
   private final Map<String, Integer> tracker = new HashMap<String, Integer>();
+  private BanHandler banHammerHandler;
 
   public void onDisable() {
     this.getServer().getScheduler().cancelTasks(this);
@@ -28,6 +31,7 @@ public class CanTheSpam extends Plugin {
       this.loadConfiguration();
       // load the worlds
       this.populateTracker();
+      this.getBanHammer();
       this.registerListeners();
       this.startTimedTasks();
     } catch (final IOException exception) {
@@ -37,6 +41,15 @@ public class CanTheSpam extends Plugin {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
     this.logger.info(String.format("%s is enabled.", this.getDescription().getFullName()));
+    
+  }
+
+  private void getBanHammer() {
+    BanHammer plugin = (BanHammer) this.getServer().getPluginManager().getPlugin("BanHammer");
+    if (plugin != null) {
+      logger.info("Using " + plugin.getDescription().getFullName() + ".");
+      banHammerHandler = plugin.getHandler(CanTheSpam.class);
+    }
     
   }
 
@@ -52,7 +65,7 @@ public class CanTheSpam extends Plugin {
   }
 
   private void registerListeners() {
-    this.listener = new SpamListener(configuration.getHitCount(), tracker);
+    this.listener = new SpamListener(configuration.getHitCount(), tracker, this.banHammerHandler);
     this.getServer().getPluginManager().registerEvents(this.listener, this);
   }
 
